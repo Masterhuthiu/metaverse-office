@@ -6,6 +6,7 @@
     <title>Metaverse Office Multiplayer</title>
 
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
     <script src="https://unpkg.com/open-easyrtc@1.1.0/api/easyrtc.js"></script>
@@ -17,8 +18,7 @@
         src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
 
     <script>
-        // Sửa lỗi NAF.schemas bằng cách đăng ký trực tiếp
-        // Đồng bộ vị trí (position) và xoay (rotation) cho Avatar
+        // Sửa lỗi NAF.schemas: Đăng ký trực tiếp không cần check hàm tồn tại
         NAF.schemas.add({
             template: '#avatar-template',
             components: [
@@ -36,7 +36,7 @@
         adapter: easyrtc;
         serverURL: https://naf-server.onrender.com;
     ">
-        <a-assets timeout="10000">
+        <a-assets>
             <a-asset-item id="office-model" src="assets/isometric_office.glb"></a-asset-item>
 
             <template id="avatar-template">
@@ -62,14 +62,17 @@
     </a-scene>
 
     <div id="status"
-        style="position: fixed; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 10px; z-index: 999;">
-        Đang kết nối...
+        style="position: fixed; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 10px; z-index: 999; font-family: sans-serif; border-radius: 5px;">
+        Đang kết nối server...
     </div>
 
     <script>
         document.body.addEventListener('connected', (evt) => {
-            document.getElementById('status').innerText = "Đã kết nối! ID của bạn: " + evt.detail.clientId;
-            console.log("✅ Đã kết nối server NAF");
+            document.getElementById('status').innerText = "✅ Đã kết nối! ID: " + evt.detail.clientId;
+        });
+
+        document.body.addEventListener('clientConnected', (evt) => {
+            console.log("👤 Người chơi mới đã vào:", evt.detail.clientId);
         });
     </script>
 </body>
