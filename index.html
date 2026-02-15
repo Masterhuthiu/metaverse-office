@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Metaverse Office - Multiplayer Research</title>
+    <title>Metaverse Office - Multiplayer Fix</title>
 
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
@@ -32,11 +32,15 @@
 
         .status-dot {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            background: red;
+            background: #ff4444;
             margin-right: 5px;
+        }
+
+        #network-status {
+            font-weight: bold;
         }
     </style>
 </head>
@@ -44,19 +48,19 @@
 <body>
 
     <div id="instructions">
-        <div id="network-status"><span class="status-dot"></span> Đang kết nối...</div>
-        <hr>
-        <b>ĐIỀU KHIỂN:</b><br>
+        <div id="network-status"><span class="status-dot"></span> Đang kết nối server...</div>
+        <hr style="border: 0.5px solid #444">
+        <b>THAO TÁC:</b><br>
         - Nhấn chuột vào màn hình để xoay<br>
-        - Phím <b>W-A-S-D</b> để đi bộ<br>
-        - Mở 2 tab để kiểm tra Multiplayer
+        - Phím <b>W-A-S-D</b> để di chuyển<br>
+        - <b>F5</b> nếu đứng quá 10s không thấy xanh
     </div>
 
     <a-scene networked-scene="
-        room: office_room_unique_999;
+        room: office_room_research_01;
         debug: true;
         adapter: socketio;
-        serverURL: https://nafs.herokuapp.com/;
+        serverURL: https://networked-aframe.glitch.me/;
     " renderer="antialias: true; colorManagement: true;">
 
         <a-assets>
@@ -64,21 +68,20 @@
 
             <template id="avatar-template">
                 <a-entity class="avatar">
-                    <a-sphere class="head" color="#FF5733" scale="0.2 0.3 0.2"></a-sphere>
-                    <a-box class="body" color="#C70039" position="0 -0.4 0" scale="0.3 0.6 0.1"></a-box>
+                    <a-sphere class="head" color="#5985ff" scale="0.25 0.35 0.25"></a-sphere>
+                    <a-box class="body" color="#5985ff" position="0 -0.45 0" scale="0.4 0.7 0.15"></a-box>
                 </a-entity>
             </template>
         </a-assets>
 
-        <a-entity environment="preset: contact; shadow: true; dressingAmount: 0;"></a-entity>
+        <a-entity environment="preset: contact; shadow: true;"></a-entity>
 
-        <a-entity gltf-model="#office-model" position="0 0 -3" scale="1 1 1">
-        </a-entity>
+        <a-entity gltf-model="#office-model" position="0 0 -3" scale="1 1 1"></a-entity>
 
         <a-entity id="rig" movement-controls="speed: 0.15;" position="0 0 5"
             networked="template:#avatar-template;attachTemplateToLocal:false;">
             <a-entity camera look-controls="pointerLockEnabled: true" position="0 1.6 0">
-                <a-cursor color="#4CC3D9"></a-cursor>
+                <a-cursor color="#4CC3D9" raycaster="objects: .interactable"></a-cursor>
             </a-entity>
         </a-entity>
 
@@ -86,22 +89,21 @@
     </a-scene>
 
     <script>
-        // Xử lý logic hiển thị trạng thái kết nối
         const statusDot = document.querySelector('.status-dot');
         const statusText = document.querySelector('#network-status');
 
+        // Bắt sự kiện khi đã kết nối thành công
         document.body.addEventListener('connected', function (evt) {
             statusDot.style.background = "#00ff00";
-            statusText.innerHTML = '<span class="status-dot" style="background:#00ff00"></span> Đã kết nối: ' + evt.detail.clientId;
-            console.log("NAF: Đã kết nối với ID " + evt.detail.clientId);
+            statusText.innerHTML = '<span class="status-dot" style="background:#00ff00"></span> Đã kết nối (ID: ' + evt.detail.clientId + ')';
+            console.log("NAF: Đã kết nối thành công!");
         });
 
-        // Tự động kiểm tra lỗi nạp thư viện
-        window.onload = function () {
-            if (typeof NAF === 'undefined') {
-                alert("Lỗi: Không tải được thư viện Networked-Aframe. Hãy kiểm tra kết nối Internet!");
-            }
-        };
+        // Xử lý lỗi kết nối
+        document.body.addEventListener('connectError', function (evt) {
+            console.error("NAF: Lỗi kết nối server!", evt.detail.error);
+            statusText.innerText = "Lỗi kết nối Server!";
+        });
     </script>
 </body>
 
