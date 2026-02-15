@@ -8,7 +8,7 @@
     <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
-    <!-- Socket.io v4 (match server Render) -->
+    <!-- Socket.io -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
     <!-- Networked-AFrame -->
@@ -52,7 +52,7 @@
 
 <body>
 
-    <!-- UI trạng thái -->
+    <!-- UI -->
     <div id="instructions">
         <div id="network-status">
             <span class="status-dot"></span> Đang kết nối server...
@@ -66,17 +66,16 @@
 
     <!-- SCENE -->
     <a-scene renderer="antialias:true; colorManagement:true;" networked-scene="
-    room: office_room_research_01;
-    debug: true;
-    adapter: socketio;
-    serverURL: https://naf-server.onrender.com;
-  ">
+        room: office_room_research_01;
+        connectOnLoad: true;
+        debug: true;
+        adapter: socketio;
+        serverURL: https://naf-server.onrender.com;
+    ">
 
         <!-- ASSETS -->
         <a-assets timeout="10000">
-            <!-- ⚠️ Phải là đường dẫn đúng GitHub Pages -->
-            <a-asset-item id="office-model" src="assets/isometric_office.glb">
-            </a-asset-item>
+            <a-asset-item id="office-model" src="assets/isometric_office.glb"></a-asset-item>
 
             <!-- Avatar template -->
             <template id="avatar-template">
@@ -90,13 +89,13 @@
         <!-- ENV -->
         <a-entity environment="preset: contact; shadow: true;"></a-entity>
 
-        <!-- OFFICE MODEL -->
-        <a-entity gltf-model="#office-model" position="0 0 -3" rotation="0 180 0" scale="1 1 1">
-        </a-entity>
+        <!-- OFFICE -->
+        <a-entity gltf-model="#office-model" position="0 0 -3" rotation="0 180 0"></a-entity>
 
-        <!-- PLAYER -->
+        <!-- PLAYER RIG -->
         <a-entity id="rig" position="0 0 5" movement-controls="speed:0.15"
-            networked="template:#avatar-template; attachTemplateToLocal:false;">
+            networked="template:#avatar-template; attachTemplateToLocal:true;">
+
             <a-entity camera position="0 1.6 0" look-controls="pointerLockEnabled:true">
                 <a-cursor color="#4CC3D9"></a-cursor>
             </a-entity>
@@ -104,13 +103,14 @@
 
         <!-- LIGHT -->
         <a-light type="ambient" intensity="0.8"></a-light>
+
     </a-scene>
 
     <!-- SCRIPT -->
     <script>
         const statusText = document.getElementById("network-status");
 
-        // NAF connected
+        // Khi kết nối thành công
         document.body.addEventListener("connected", (evt) => {
             statusText.innerHTML =
                 '<span class="status-dot" style="background:#00ff00"></span> Đã kết nối ID: ' +
@@ -119,7 +119,7 @@
             console.log("✅ NAF connected:", evt.detail.clientId);
         });
 
-        // NAF error
+        // Khi lỗi kết nối
         document.body.addEventListener("connectError", (evt) => {
             statusText.innerHTML =
                 '<span class="status-dot" style="background:#ff0000"></span> Lỗi kết nối server';
