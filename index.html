@@ -14,10 +14,10 @@
         src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
 
     <script>
-        // SỬA LỖI: Đăng ký schema bên trong một Component 
-        // Điều này đảm bảo NAF sẽ thấy #avatar-template sau khi HTML đã load xong
-        AFRAME.registerComponent('network-setup', {
+        // GIẢI PHÁP: Tạo một component để đăng ký Schema đúng thời điểm
+        AFRAME.registerComponent('network-init', {
             init: function () {
+                // Đăng ký schema tại đây đảm bảo NAF sẽ thấy template #avatar-template
                 NAF.schemas.add({
                     template: '#avatar-template',
                     components: [
@@ -25,14 +25,14 @@
                         'rotation'
                     ]
                 });
-                console.log("✅ Schema đã được đăng ký sau khi Scene load!");
+                console.log("✅ Schema registered successfully!");
             }
         });
     </script>
 </head>
 
 <body>
-    <a-scene network-setup networked-scene="
+    <a-scene network-init networked-scene="
         room: office_room_01;
         debug: true;
         adapter: easyrtc;
@@ -65,13 +65,14 @@
 
     <div id="status"
         style="position: fixed; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 10px; z-index: 999; font-family: sans-serif; border-radius: 5px;">
-        Đang kết nối...
+        Đang kết nối server...
     </div>
 
     <script>
+        // Lắng nghe sự kiện kết nối thành công
         document.body.addEventListener('connected', (evt) => {
             document.getElementById('status').innerText = "✅ Đã kết nối! ID: " + evt.detail.clientId;
-            console.log("🚀 Kết nối thành công với Server!");
+            console.log("🚀 NAF connected with ID:", evt.detail.clientId);
         });
     </script>
 </body>
